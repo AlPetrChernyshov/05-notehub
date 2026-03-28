@@ -1,28 +1,40 @@
 import axios from 'axios';
 import type { Note } from '../types/note';
 
+// Налаштування екземпляра Axios
 const noteApi = axios.create({
   baseURL: 'https://notehub-public.goit.study/api',
   headers: {
+    // Змінна оточення має бути завантажена через Vite
     Authorization: `Bearer ${import.meta.env.VITE_NOTEHUB_TOKEN}`,
   },
 });
 
+
 export interface FetchNotesResponse {
   notes: Note[];
-  totalNotes: number;
   totalPages: number;
-  currentPage: number;
 }
 
-export const fetchNotes = async (page: number, perPage: number, search: string): Promise<FetchNotesResponse> => {
+
+export const fetchNotes = async (
+  page?: number,
+  perPage?: number,
+  search?: string
+): Promise<FetchNotesResponse> => {
   const response = await noteApi.get<FetchNotesResponse>('/notes', {
-    params: { page, perPage, search },
+    params: { 
+      page, 
+      perPage, 
+      search 
+    },
   });
   return response.data;
 };
 
-export const createNote = async (note: Omit<Note, 'id'>): Promise<Note> => {
+export const createNote = async (
+  note: Omit<Note, 'id' | 'createdAt' | 'updatedAt'>
+): Promise<Note> => {
   const response = await noteApi.post<Note>('/notes', note);
   return response.data;
 };
